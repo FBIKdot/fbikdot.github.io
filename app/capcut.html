@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://esm.sh/@picocss/pico@2/css/pico.classless.min.css">
+    <title>Capcut Getter</title>
+</head>
+
+<body hidden>
+    <main>
+        <h1>
+            <span data-lang="en">Capcut Getter</span>
+            <span data-lang="zh" hidden>Capcut 获取器</span>
+        </h1>
+        <select name="favorite-cuisine" required aria-invalid="none">
+            <option selected disabled value="none">
+                Select your platform...
+            </option>
+            <option value="0">Windows</option>
+            <option value="1">macOS</option>
+        </select>
+        <div id="log" hidden>log</div>
+        <table hidden>
+            <tbody>
+                <tr>
+                    <th scope="row">Latest Stable</th>
+                    <td><a href="#" target="_blank" id="stable"></a></td>
+                </tr>
+                <tr>
+                    <th scope="row">Latest Beta</th>
+                    <td><a href="#" target="_blank" id="beta"></a></td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <div>
+            <span data-lang="en">To inspect the back-end source code, visit:</span>
+            <span data-lang="zh" hidden>查看后端源代码：</span>
+            <a href="https://dash.deno.com/playground/capcut-getter" target="_blank"
+                rel="noopener noreferrer">https://dash.deno.com/playground/capcut-getter</a>
+        </div>
+    </main>
+</body>
+<script type="module" src="/js/init.js"></script>
+<script type="module">
+    function changeUrl(value) {
+        document.querySelector('#log').hidden = false
+        document.querySelector('#log').innerText = 'Fetching ...'
+        document.querySelector('select').disabled = true
+        fetch(`https://capcut-getter.deno.dev/?device_platform=${['windows', 'macos'][value]}`)
+            .then(res => res.json())
+            .then(data => {
+                document.querySelector('table').hidden = false
+                document.querySelector('#stable').innerText = data.latest_stable_url
+                document.querySelector('#stable').href = data.latest_stable_url
+                document.querySelector('#beta').innerText = data.latest_url
+                document.querySelector('#beta').href = data.latest_stable_url
+                document.querySelector('#log').innerText = 'Done!'
+                document.querySelector('select').disabled = false
+                console.log(data)
+            })
+    }
+    document.querySelector('select').addEventListener('change', event => changeUrl(Number(event.target.value)))
+    if (document.querySelector('select').value !== "none") {
+        changeUrl(Number(document.querySelector('select').value))
+    }
+
+</script>
+
+</html>
